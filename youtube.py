@@ -1,5 +1,5 @@
 __module_name__ = "YouTube title" 
-__module_version__ = "1.0" 
+__module_version__ = "1.01" 
 __module_description__ = "Prints the name of a YouTube Video" 
 
 import xchat
@@ -29,7 +29,7 @@ def yt_cb(word, word_eol, userdata):
 						xchat.prnt("Invalid Video ID")
 						return xchat.EAT_NONE
 					title = entry.media.title.text
-					chan.command("YouTube Video Name: " + title)
+					chan.command("say YouTube Video Name: " + title)
 					return xchat.EAT_NONE
 	return xchat.EAT_NONE
 
