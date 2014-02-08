@@ -1,5 +1,5 @@
 __module_name__ = "YouTube title" 
-__module_version__ = "1.13" 
+__module_version__ = "1.14" 
 __module_description__ = "Prints the name of a YouTube Video" 
 
 import xchat
@@ -8,6 +8,7 @@ import gdata.youtube
 import gdata.youtube.service
 
 def yt_cb(word, word_eol, userdata):
+	global YT_enabled
 	chan = xchat.find_context(channel="#commie-subs")
 	if not YT_enabled:
 		return xchat.EAT_NONE
