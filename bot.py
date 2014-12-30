@@ -32,6 +32,9 @@ def addcommand_cb(word, word_eol, userdata):
 		if words[1].lower() in global_commands:
 			return xchat.EAT_NONE
 		
+		if words[1][0] != "!":
+			return xchat.EAT_NONE
+		
 		command = (words[1].lower(),)
 		full_command = (words[1].lower(), 0, ' '.join(words[2:]), 60000)
 		
@@ -138,6 +141,9 @@ def mastercommand_cb(word, word_eol, userdata):
 	global global_commands
 	
 	command = word[1].split(' ')[0].lower()
+	if command[0] != "!":
+		return xchat.EAT_NONE
+	
 	if command in global_commands:
 		if command == "!add":
 			addcommand_cb(word, word_eol, userdata)
