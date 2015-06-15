@@ -12,16 +12,6 @@ def checkmessage_cb(word, word_eol, userdata):
 			nick = nick[1:]
 		if nick.lower() == "thekey":
 			if "NSFW" in word[1]:
-				"""url = word[1].split(" - ")[1]
-				for link in url.split(", "):
-					link = xchat.strip(link)
-					name = link.split("/")[-1]
-					if ".jpg" in link or ".png" in link or ".gif" in link.lower():
-						pic = urllib2.urlopen(link)
-						real_pic = pic.read()
-						file = open("C:\\Users\\Tobias\\images\\" + name, "wb")
-						file.write(real_pic)
-						file.close()"""
 				return xchat.EAT_ALL
 	return xchat.EAT_NONE
 
