@@ -8,7 +8,7 @@ import sqlite3
 #commands: command text, isText integer, output text, cooldown integer
 conn = sqlite3.connect('commands.db')
 ran_commands = []
-global_commands = ["!add", "!setcooldown", "!delete"]
+global_commands = ["!add", "!setcooldown", "!delete", "!commands", "!sellout"]
 
 def check_mod(name):
 	if len(name) <3:
@@ -17,6 +17,15 @@ def check_mod(name):
 		return False
 	return True
 
+def showcommands_cb(word, word_eol, userdata):
+	global conn
+	global global_commands
+	
+	c = conn.cursor()
+	c.execute('SELECT * FROM commands')
+	print c.fetchall()
+	
+	return xchat.EAT_NONE
 
 def addcommand_cb(word, word_eol, userdata):
 	global conn
@@ -32,15 +41,16 @@ def addcommand_cb(word, word_eol, userdata):
 		if words[1].lower() in global_commands:
 			return xchat.EAT_NONE
 		
-		if words[1][0] != "!":
-			return xchat.EAT_NONE
-		
+
+
+
 		command = (words[1].lower(),)
 		full_command = (words[1].lower(), 0, ' '.join(words[2:]), 60000)
 		
 		c = conn.cursor()
 		c.execute('DELETE FROM commands WHERE command=?', command)
 		c.execute('INSERT INTO commands VALUES (?, ?, ?, ?)', full_command)
+		xchat.command('say command ' + command[0] + ' successful')
 		conn.commit()
 	
 	return xchat.EAT_NONE
@@ -62,13 +72,18 @@ def setcooldown_cb(word, word_eol, userdata):
 		command = words[1].lower()
 		try:
 			cooldown = int(words[2])
-			update = (command, cooldown)
-			
-			c.execute('UPDATE commands SET cooldown=? WHERE command=?', update)
-			
+		
+			update = (cooldown, command)
+
+
+
+		
 			c = conn.cursor()
+			c.execute('UPDATE commands SET cooldown=? WHERE command=?', update)
+			xchat.command('say Cooldown change for ' + command + ' successful')
 			conn.commit()
 		except:
+			xchat.prnt("Unexpected error:" + sys.exc_info()[0])
 			return xchat.EAT_NONE
 	
 	return xchat.EAT_NONE
@@ -83,7 +98,7 @@ def runcommand_cb(word, word_eol, userdata):
 	
 	if command in ran_commands or command in global_commands:
 		return xchat.EAT_NONE
-	xchat.prnt("penis" + command)
+
 	safe_command = (command,)
 	c = conn.cursor()
 	c.execute('SELECT * FROM commands WHERE command=?', safe_command)
@@ -124,6 +139,7 @@ def deletecommand_cb(word, word_eol, userdata):
 		
 		c = conn.cursor()
 		c.execute('DELETE FROM commands WHERE command=?', command)
+		xchat.command('say command ' + words[1].lower() + ' deleted')
 		conn.commit()
 	
 	return xchat.EAT_NONE
@@ -141,16 +157,18 @@ def mastercommand_cb(word, word_eol, userdata):
 	global global_commands
 	
 	command = word[1].split(' ')[0].lower()
-	if command[0] != "!":
-		return xchat.EAT_NONE
-	
+
+
+
 	if command in global_commands:
 		if command == "!add":
 			addcommand_cb(word, word_eol, userdata)
 		elif command == "!setcooldown":
 			setcooldown_cb(word, word_eol, userdata)
-		elif command == "delete":
+		elif command == "!delete":
 			deletecommand_cb(word, word_eol, userdata)
+		elif command == '!commands':
+			showcommands_cb(word, word_eol, userdata)
 	else:
 		runcommand_cb(word, word_eol, userdata)
 	
