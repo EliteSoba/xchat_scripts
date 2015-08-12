@@ -1,6 +1,6 @@
 ﻿__module_name__ = "Live Channel Detector"
 __module_version__ = "1.0"
-__module_description__ = "A bot that will tell you when a channel goes live"
+__module_description__ = "A script that will tell you when a channel goes live"
 
 import xchat
 import urllib
