@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.1"
+__module_version__ = "1.11"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -67,7 +67,7 @@ def twitch_cb(userdata):
 			#change the status in the dictionary and alert user
 			if not live and result:
 				monitoring[channel] = (True, monitoring[channel][1])
-				xchat.command("say " + channel + " is now live on " + ("Twitch at twitch.tv/" if monitoring[channel][1] else "Hitbox at twitch.tv/") + channel)
+				xchat.command("say " + channel + " is now live on " + ("Twitch at twitch.tv/" if monitoring[channel][1] else "Hitbox at hitbox.tv/") + channel)
 			#If the channel was live before and is not now,
 			#change the status in the dictionary and also alert user
 			elif live and not result:
