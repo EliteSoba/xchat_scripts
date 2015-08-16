@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.13"
+__module_version__ = "1.2"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -26,6 +26,8 @@ def check_hitbox(name):
 	try:
 		decoded = json.loads(data)
 	except ValueError:
+		#I'm not completely sure of the specifics because doing this right when someone goes offline
+		#is a pain, but when someone goes offline I seem to get an error decoding a JSON object
 		return False
 	return decoded["media_is_live"] == '1'
 
@@ -35,6 +37,12 @@ monitor = False
 
 def monitor_cb(word, word_eol, userdata):
 	global monitor
+	
+	#Don't want to start timer multiple times
+	if monitor:
+		xchat.prnt("Monitoring is already in progress")
+		return xchat.EAT_ALL
+	
 	monitor = True
 	xchat.prnt("Monitoring started")
 	timer = xchat.hook_timer(1000, twitch_cb)
@@ -42,6 +50,12 @@ def monitor_cb(word, word_eol, userdata):
 
 def unmonitor_cb(word, word_eol, userdata):
 	global monitor
+	
+	#Not particularly necessary, but still nice to alert the user.
+	if not monitor:
+		xchat.prnt("Monitoring not in progress")
+		return xchat.EAT_ALL
+	
 	monitor = False
 	xchat.prnt("Monitoring stopped")
 	return xchat.EAT_ALL
@@ -58,6 +72,8 @@ def twitch_cb(userdata):
 		try:
 			live = monitoring[channel][0]
 			result = False
+			
+			#Use a different method depending on Twitch or Hitbox
 			if monitoring[channel][1]:
 				result = check_twitch(channel)
 			else:
