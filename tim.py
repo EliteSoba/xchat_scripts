@@ -1,11 +1,12 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.3"
+__module_version__ = "1.31"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
 import urllib
 import urllib2
 import json
+import sys
 
 #Checks if a Twitch stream is live. Note that there is a slight delay in Twitch's API
 def check_twitch(name):
