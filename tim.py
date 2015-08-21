@@ -1,13 +1,11 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.2"
+__module_version__ = "1.3"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
 import urllib
 import urllib2
 import json
-import time
-import winsound
 
 #Checks if a Twitch stream is live. Note that there is a slight delay in Twitch's API
 def check_twitch(name):
@@ -94,6 +92,8 @@ def twitch_cb(userdata):
 				xchat.prnt(channel + " is no longer live")
 		except urllib2.URLError:
 			xchat.prnt("Error checking stream status. Connection likely timed out")
+		except:
+			xchat.prnt("Unknown error occurred. Error message is " + str(sys.exc_info()))
 	return 1
 
 xchat.hook_command("monitor", monitor_cb, help = "/MONITOR Alerts when Tim is live")
