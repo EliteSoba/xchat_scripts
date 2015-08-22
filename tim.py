@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.4"
+__module_version__ = "1.41"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -7,9 +7,8 @@ import urllib
 import urllib2
 import json
 import sys
-from enum import Enum
 
-class Status(Enum):
+class Status:
 	online = 1
 	offline = 2
 	ending = 3
@@ -110,7 +109,7 @@ def monitoring_cb(userdata):
 			xchat.prnt("Unknown error occurred. Error message is " + str(sys.exc_info()))
 	return 1
 
-def timer_cb(userdata)
+def timer_cb(userdata):
 	global monitoring
 	#Only go offline if the stream didn't come back within this half hour
 	if monitoring[channel][0] is Status.ending:
