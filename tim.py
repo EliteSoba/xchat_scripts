@@ -2,6 +2,8 @@
 __module_version__ = "1.31"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
+#TODO: Add a timer of a few minutes somewhere so that a minor drop doesn't count as the stream starting up again.
+
 import xchat
 import urllib
 import urllib2
@@ -44,7 +46,7 @@ def monitor_cb(word, word_eol, userdata):
 	
 	monitor = True
 	xchat.prnt("Monitoring started")
-	timer = xchat.hook_timer(1000, twitch_cb)
+	timer = xchat.hook_timer(1000, monitoring_cb)
 	return xchat.EAT_ALL
 
 def unmonitor_cb(word, word_eol, userdata):
@@ -59,7 +61,7 @@ def unmonitor_cb(word, word_eol, userdata):
 	xchat.prnt("Monitoring stopped")
 	return xchat.EAT_ALL
 	
-def twitch_cb(userdata):
+def monitoring_cb(userdata):
 	global monitoring
 	global monitor
 	
