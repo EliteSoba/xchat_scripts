@@ -1,14 +1,18 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.31"
+__module_version__ = "1.4"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
-
-#TODO: Add a timer of a few minutes somewhere so that a minor drop doesn't count as the stream starting up again.
 
 import xchat
 import urllib
 import urllib2
 import json
 import sys
+from enum import Enum
+
+class Status(Enum):
+	online = 1
+	offline = 2
+	ending = 3
 
 #Checks if a Twitch stream is live. Note that there is a slight delay in Twitch's API
 def check_twitch(name):
@@ -33,7 +37,7 @@ def check_hitbox(name):
 	return decoded["media_is_live"] == '1'
 
 #Key = Channel. Value = tuple of (Liveness, On Twitch)
-monitoring = {"monotonetim" : (False, True), "acetonetim" : (False, True), "stereotonetim" : (False, True), "thepuyoplace" : (False, False)}
+monitoring = {"monotonetim" : (Status.offline, True), "acetonetim" : (Status.offline, True), "stereotonetim" : (Status.offline, True), "thepuyoplace" : (Status.offline, False)}
 monitor = False
 
 def monitor_cb(word, word_eol, userdata):
@@ -85,19 +89,33 @@ def monitoring_cb(userdata):
 			
 			#If the channel was not live before and is live now,
 			#change the status in the dictionary and alert user
-			if not live and result:
-				monitoring[channel] = (True, monitoring[channel][1])
+			if live is Status.offline and result:
+				monitoring[channel] = (Status.online, monitoring[channel][1])
 				xchat.command("say " + channel + " is now live on " + ("Twitch at http://www.twitch.tv/" if monitoring[channel][1] else "Hitbox at http://www.hitbox.tv/") + channel)
 			#If the channel was live before and is not now,
 			#change the status in the dictionary and also alert user
-			elif live and not result:
-				monitoring[channel] = (False, monitoring[channel][1])
+			elif live is Status.online and not result:
+				monitoring[channel] = (Status.ending, monitoring[channel][1])
+				#Add a deadzone where the stream is dying to handle small disconnects
+				timer = xchat.hook_timer(300000, timer_cb, channel)
 				xchat.prnt(channel + " is no longer live")
+			#If the channel was ending but came back within half an hour,
+			#set status back to online and don't alert channel
+			elif live is Status.ending and result:
+				monitoring[channel] = (Status.online, monitoring[channel][1])
+				xchat.prnt("Channel came back online soon after disconnecting")
 		except urllib2.URLError:
 			xchat.prnt("Error checking stream status. Connection likely timed out")
 		except:
 			xchat.prnt("Unknown error occurred. Error message is " + str(sys.exc_info()))
 	return 1
+
+def timer_cb(userdata)
+	global monitoring
+	#Only go offline if the stream didn't come back within this half hour
+	if monitoring[channel][0] is Status.ending:
+		monitoring[channel] = (Status.offline, monitoring[channel][1])
+	return 0
 
 xchat.hook_command("monitor", monitor_cb, help = "/MONITOR Alerts when Tim is live")
 xchat.hook_command("unmonitor", unmonitor_cb, help = "/UNMONITOR Stop monitoring")
