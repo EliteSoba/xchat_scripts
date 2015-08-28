@@ -96,7 +96,7 @@ def monitoring_cb(userdata):
 			elif live is Status.online and not result:
 				monitoring[channel] = (Status.ending, monitoring[channel][1])
 				#Add a deadzone where the stream is dying to handle small disconnects
-				timer = xchat.hook_timer(300000, timer_cb, channel)
+				timer = xchat.hook_timer(1800000, timer_cb, channel)
 				xchat.prnt(channel + " is no longer live")
 			#If the channel was ending but came back within half an hour,
 			#set status back to online and don't alert channel
