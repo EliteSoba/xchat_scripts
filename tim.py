@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.42"
+__module_version__ = "1.43"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
