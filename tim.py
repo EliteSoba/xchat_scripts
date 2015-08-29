@@ -156,7 +156,7 @@ def timer_cb(channel):
 		monitoring[channel] = (Status.offline, monitoring[channel][1])
 	return 0
 
-def since(word, word_eol, userdata):
+def since_cb(word, word_eol, userdata):
 	global lastStreamTime
 	global filename
 	
