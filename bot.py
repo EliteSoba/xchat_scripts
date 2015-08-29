@@ -1,5 +1,5 @@
 __module_name__ = "Generic bot"
-__module_version__ = "0.6"
+__module_version__ = "0.7"
 __module_description__ = "A bot that can add and remove commands"
 
 import xchat
@@ -13,7 +13,7 @@ conn = sqlite3.connect('commands.db')
 updated = False
 commands_url = ""
 ran_commands = []
-global_commands = ["!add", "!setcooldown", "!delete", "!commands", "!sellout"]
+global_commands = ["!add", "!setcooldown", "!delete", "!commands", "!sellout", "!since"]
 
 def check_mod(name):
 	if len(name) <3:
