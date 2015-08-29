@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.43"
+__module_version__ = "1.5"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -7,11 +7,44 @@ import urllib
 import urllib2
 import json
 import sys
+import time
 
 class Status:
 	online = 1
 	offline = 2
 	ending = 3
+
+class TimeDelta:
+	sec = 0
+	min = 0
+	hour = 0
+	day = 0
+	week = 0
+	def __init__(self, time):
+		self.sec = int(time % 60)
+		time = time / 60
+		self.min = int(time % 60)
+		time = time / 60
+		self.hour = int(time % 24)
+		time = time / 24
+		self.day = int(time % 7)
+		self.week = int(time / 7)
+	
+	def readableTime(self):
+		time = "It has been "
+		if not self.week is 0:
+			time = time + str(self.week) + " weeks, "
+		if not self.day is 0:
+			time = time + str(self.day) + " days, "
+		if not self.hour is 0:
+			time = time + str(self.hour) + " hours, "
+		if not self.min is 0:
+			time = time + str(self.min) + " minutes, "
+		time = time + "and " + str(self.sec) + " seconds since the last stream"
+		return time
+	
+lastStreamTime = -1
+filename = "laststream.txt"
 
 #Checks if a Twitch stream is live. Note that there is a slight delay in Twitch's API
 def check_twitch(name):
@@ -67,6 +100,8 @@ def unmonitor_cb(word, word_eol, userdata):
 def monitoring_cb(userdata):
 	global monitoring
 	global monitor
+	global lastStreamTime
+	global filename
 	
 	if not monitor:
 		return 0
@@ -98,6 +133,11 @@ def monitoring_cb(userdata):
 				#Add a deadzone where the stream is dying to handle small disconnects
 				timer = xchat.hook_timer(1800000, timer_cb, channel)
 				xchat.prnt(channel + " is no longer live")
+				if channel == "monotonetim":
+					lastStreamTime = time.time()
+					file = open(filename, "w")
+					file.write(lastStreamTime)
+					file.close()
 			#If the channel was ending but came back within half an hour,
 			#set status back to online and don't alert channel
 			elif live is Status.ending and result:
@@ -116,5 +156,21 @@ def timer_cb(channel):
 		monitoring[channel] = (Status.offline, monitoring[channel][1])
 	return 0
 
+def since(word, word_eol, userdata):
+	global lastStreamTime
+	global filename
+	
+	command = word[1].split(' ')[0].lower()
+	if command == "!since":
+		if lastStreamTime == -1:
+			file = open(filename, "r")
+			lastStreamTime = float(file.read())
+			file.close()
+		delta = Time(time.time() - lastStreamTime)
+		xchat.command("say " + delta.readableTime())
+	return xchat.EAT_NONE
+	
+	
+xchat.hook_print("Channel Message", since_cb)
 xchat.hook_command("monitor", monitor_cb, help = "/MONITOR Alerts when Tim is live")
 xchat.hook_command("unmonitor", unmonitor_cb, help = "/UNMONITOR Stop monitoring")
