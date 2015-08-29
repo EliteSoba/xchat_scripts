@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.5"
+__module_version__ = "1.51"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -45,6 +45,7 @@ class TimeDelta:
 	
 lastStreamTime = -1
 filename = "laststream.txt"
+cooldown = False
 
 #Checks if a Twitch stream is live. Note that there is a slight delay in Twitch's API
 def check_twitch(name):
@@ -159,6 +160,10 @@ def timer_cb(channel):
 def since_cb(word, word_eol, userdata):
 	global lastStreamTime
 	global filename
+	global cooldown
+	
+	if cooldown:
+		return xchat.EAT_NONE
 	
 	command = word[1].split(' ')[0].lower()
 	if command == "!since":
@@ -168,8 +173,16 @@ def since_cb(word, word_eol, userdata):
 			file.close()
 		delta = TimeDelta(time.time() - lastStreamTime)
 		xchat.command("say " + delta.readableTime())
+		timer = xchat.hook_timer(60000, cooldown_cb)
+		cooldown = True
 	return xchat.EAT_NONE
-	
+
+def cooldown_cb():
+	global cooldown
+	#There should only be one cooldown in this script,
+	#as the other script covers cooldown commands
+	cooldown = False
+	return 0
 	
 xchat.hook_print("Channel Message", since_cb)
 xchat.hook_command("monitor", monitor_cb, help = "/MONITOR Alerts when Tim is live")
