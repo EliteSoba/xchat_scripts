@@ -166,7 +166,7 @@ def since_cb(word, word_eol, userdata):
 			file = open(filename, "r")
 			lastStreamTime = float(file.read())
 			file.close()
-		delta = Time(time.time() - lastStreamTime)
+		delta = TimeDelta(time.time() - lastStreamTime)
 		xchat.command("say " + delta.readableTime())
 	return xchat.EAT_NONE
 	
