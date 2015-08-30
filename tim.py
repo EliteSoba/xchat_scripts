@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.52a"
+__module_version__ = "1.53"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -161,12 +161,20 @@ def since_cb(word, word_eol, userdata):
 	global lastStreamTime
 	global filename
 	global cooldown
+	global monitoring
 	
 	if cooldown:
 		return xchat.EAT_NONE
 	
 	command = word[1].split(' ')[0].lower()
 	if command == "!since":
+		#Command not particularly useful if stream is live
+		if monitoring["monotonetim"][0]:
+			xchat.command("say MonotoneTim is live right now!")
+			timer = xchat.hook_timer(60000, cooldown_cb)
+			cooldown = True
+			return xchat.EAT_NONE
+		
 		if lastStreamTime == -1:
 			file = open(filename, "r")
 			lastStreamTime = float(file.read())
