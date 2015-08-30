@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.51"
+__module_version__ = "1.52"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -177,7 +177,7 @@ def since_cb(word, word_eol, userdata):
 		cooldown = True
 	return xchat.EAT_NONE
 
-def cooldown_cb():
+def cooldown_cb(userdata):
 	global cooldown
 	#There should only be one cooldown in this script,
 	#as the other script covers cooldown commands
