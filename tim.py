@@ -1,5 +1,5 @@
 ﻿__module_name__ = "Tim Monitor"
-__module_version__ = "1.52"
+__module_version__ = "1.52a"
 __module_description__ = "A bot that will tell you if Tim is streaming on any channel"
 
 import xchat
@@ -31,6 +31,7 @@ class TimeDelta:
 		self.week = int(time / 7)
 	
 	def readableTime(self):
+		
 		time = "It has been "
 		if not self.week is 0:
 			time = time + str(self.week) + " weeks, "
@@ -38,8 +39,7 @@ class TimeDelta:
 			time = time + str(self.day) + " days, "
 		if not self.hour is 0:
 			time = time + str(self.hour) + " hours, "
-		if not self.min is 0:
-			time = time + str(self.min) + " minutes, "
+		time = time + str(self.min) + " minutes, "
 		time = time + "and " + str(self.sec) + " seconds since the last stream"
 		return time
 	
@@ -137,7 +137,7 @@ def monitoring_cb(userdata):
 				if channel == "monotonetim":
 					lastStreamTime = time.time()
 					file = open(filename, "w")
-					file.write(lastStreamTime)
+					file.write(str(lastStreamTime))
 					file.close()
 			#If the channel was ending but came back within half an hour,
 			#set status back to online and don't alert channel
