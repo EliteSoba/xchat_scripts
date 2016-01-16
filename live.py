@@ -68,7 +68,7 @@ def monitor_cb(word, word_eol, userdata):
 		#TODO: This way adds a bit more complexity over just using an if/else
 		#and putting the monitoring[] = False in both. Consider changing
 		if starting:
-			timer = xchat.hook_timer(1000, timer_cb)
+			timer = xchat.hook_timer(60000, timer_cb)
 	return xchat.EAT_ALL
 
 def unmonitor_cb(word, word_eol, userdata):
