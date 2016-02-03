@@ -1,9 +1,11 @@
 ﻿__module_name__ = "Sellout" 
-__module_version__ = "1.1" 
+__module_version__ = "1.1a" 
 __module_description__ = "Sells out" 
 
 import xchat
 import time
+
+whitelist = ["monotonetim"]
 
 def sellout_cb(word, word_eol, userdata):
 	global valid
@@ -66,11 +68,13 @@ def sellout_cb(word, word_eol, userdata):
 	return xchat.EAT_NONE
 
 def changelink_cb(word, word_eol, userdata):
+	global whitelist
 	global link
-	if len(word) <3:
-		return xchat.EAT_NONE
-	if word[2] != "@":
-		return xchat.EAT_NONE
+	if word[0] not in whitelist:
+		if len(word) <3:
+			return xchat.EAT_NONE
+		if word[2] != "@":
+			return xchat.EAT_NONE
 
 	words = word[1].split(' ')
 	# Will always have at least one element of words
