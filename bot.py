@@ -13,7 +13,7 @@ conn = sqlite3.connect('commands.db')
 updated = False
 commands_url = ""
 ran_commands = []
-global_commands = ["!add", "!setcooldown", "!delete", "!commands", "!sellout", "!since"]
+global_commands = ["!add", "!setcooldown", "!delete", "!commands", "!sellout", "!since", "!brave"]
 
 def check_mod(name):
 	if len(name) <3:
